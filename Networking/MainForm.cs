@@ -41,7 +41,12 @@ namespace Networking {
 
         // Connect to the IP address and port number entered in the remote text boxes.
         private void vConnect() {
-            
+            // Get the IP address and port number for the remote app.
+            IPAddress ipaRemoteIP = IPAddress.Parse(txtRemoteIP.Text);
+            int iRemotePort = int.Parse(txtRemotePort.Text);
+            // Create the socket that we are going to use for the connection and connect
+            socConnection = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            socConnection.Connect(ipaRemoteIP, iRemotePort);
         }
 
         // Disconnect: shutdown and close the existing connection.
