@@ -47,11 +47,35 @@ namespace Networking {
             // Create the socket that we are going to use for the connection and connect
             socConnection = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             socConnection.Connect(ipaRemoteIP, iRemotePort);
+            // Display the local IP address and port number for this connection]
+            IPEndPoint ipeLocalEndPoint = (IPEndPoint)socConnection.LocalEndPoint;
+            IPAddress ipaLocalIP = ipeLocalEndPoint.Address;
+            int iLocalPort = ipeLocalEndPoint.Port;
+            (txtLocalIP.Text, txtLocalPort.Text) = (ipaLocalIP.ToString(), iLocalPort.ToString());
+            // Start receiving and displaying text from the remote application
+            // Get a NetworkStream associated with the socket, so we can use it to send/receive data
+            nsConnection = new NetworkStream(socConnection);
+
+            // Enable the send button so we can start sending text to the remote app
+            btnSend.Enabled = true;
         }
 
         // Disconnect: shutdown and close the existing connection.
         private void vDisconnect() {
-            
+            // Only disconnect if we really have a connection socket
+            if (socConnection != null)
+            {
+                // Shut down connection, close the socket, and dispose of the network stream and socket
+                socConnection.Shutdown(SocketShutdown.Both);
+                nsConnection.Close();
+                socConnection.Close();
+                nsConnection.Dispose();
+                socConnection.Dispose();
+                nsConnection = null;
+                socConnection = null;
+            }
+            // Reset from to prepare for a new connection
+            vResetForm();
         }
 
         // Reset everything on the form to prepare for a new connection.
@@ -86,8 +110,12 @@ namespace Networking {
         }
 
         private void btnSend_Click(object sender, EventArgs e) {
-            // Get the text to send, append CR-LF, and convert to array of bytes.
+            // Get the text to send, append CRLF, and convert to array of bytes.
+            string strMessage = txtMessage.Text;
+            strMessage += "\r\n";
+            byte[] byMessage = Encoding.UTF8.GetBytes(strMessage);
             // Send the bytes out over the stream.
+            nsConnection.Write(byMessage, 0, byMessage.Length);
             // Prepare for next line: select text and move focus to message text box.
             txtMessage.SelectAll();
             txtMessage.Focus();
