@@ -10,7 +10,7 @@ using System.Windows.Forms;
 // Namespaces for networking.
 using System.Net;
 using System.Net.Sockets;
-using System.IO;
+using System.Threading;
 
 namespace Networking {
     public partial class MainForm : Form {
@@ -55,7 +55,8 @@ namespace Networking {
             // Start receiving and displaying text from the remote application
             // Get a NetworkStream associated with the socket, so we can use it to send/receive data
             nsConnection = new NetworkStream(socConnection);
-
+            // Run a seperate task to execute vDisplayIncoming()
+            Task.Run(() => vDisplayIncoming());
             // Enable the send button so we can start sending text to the remote app
             btnSend.Enabled = true;
         }
@@ -80,9 +81,10 @@ namespace Networking {
 
         // Reset everything on the form to prepare for a new connection.
         private void vResetForm() {
-            // Clear the local IP address and port number.
+            // Clear the message, local IP address and port number.
             txtLocalIP.Clear();
             txtLocalPort.Clear();
+            txtMessage.Clear();
             // Select the remote IP address and port number and move the focus
             // to the remote IP address.
             txtRemoteIP.SelectAll();
@@ -95,7 +97,29 @@ namespace Networking {
         // Read data from the socket and display in the rich
         // text box.
         private void vDisplayIncoming() {
-            
+            // Set up byte array to receive data and decoder for UTF-8
+            byte[] byIncoming = new byte[1024];
+            Encoding encUTF8 = Encoding.UTF8;
+            int iNumBytesRcvd;
+            string strIncoming;
+            // Repeat forever
+            while (true)
+            {
+                try
+                {
+                    iNumBytesRcvd = nsConnection.Read(byIncoming, 0, byIncoming.Length);
+                    strIncoming = encUTF8.GetString(byIncoming, 0, iNumBytesRcvd);
+                    // Tell the main form to append the string
+                    DelOneStringParam delAppendText = new DelOneStringParam(rtbConversation.AppendText);
+                    this.Invoke(delAppendText, strIncoming);                   
+                }
+                catch
+                {
+                    // Problem, disconnect
+                    DelNoParams delDisconnect = new DelNoParams(vDisconnect);
+                    this.Invoke(delDisconnect);
+                }
+            }
         }
 
         // Delegate for method with no parameters.
