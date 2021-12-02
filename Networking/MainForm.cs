@@ -118,6 +118,8 @@ namespace Networking {
                     // Problem, disconnect
                     DelNoParams delDisconnect = new DelNoParams(vDisconnect);
                     this.Invoke(delDisconnect);
+                    // Finished trying to receive data. Return to stop execution
+                    return;
                 }
             }
         }
