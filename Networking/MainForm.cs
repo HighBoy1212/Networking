@@ -55,6 +55,8 @@ namespace Networking {
             // Start receiving and displaying text from the remote application
             // Get a NetworkStream associated with the socket, so we can use it to send/receive data
             nsConnection = new NetworkStream(socConnection);
+            // Clear contents of rich text box
+            rtbConversation.Clear();
             // Run a seperate task to execute vDisplayIncoming()
             Task.Run(() => vDisplayIncoming());
             // Enable the send button so we can start sending text to the remote app
@@ -154,6 +156,11 @@ namespace Networking {
 
         private void miQuit_Click(object sender, EventArgs e) {
             this.Close();
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

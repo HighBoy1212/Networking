@@ -201,14 +201,14 @@
             // miDNSLookup
             // 
             this.miDNSLookup.Name = "miDNSLookup";
-            this.miDNSLookup.Size = new System.Drawing.Size(180, 22);
+            this.miDNSLookup.Size = new System.Drawing.Size(140, 22);
             this.miDNSLookup.Text = "DNS Lookup";
             this.miDNSLookup.Click += new System.EventHandler(this.miDNSLookup_Click);
             // 
             // miQuit
             // 
             this.miQuit.Name = "miQuit";
-            this.miQuit.Size = new System.Drawing.Size(180, 22);
+            this.miQuit.Size = new System.Drawing.Size(140, 22);
             this.miQuit.Text = "Quit";
             this.miQuit.Click += new System.EventHandler(this.miQuit_Click);
             // 
@@ -224,6 +224,7 @@
             this.MainMenuStrip = this.msMainMenu;
             this.Name = "MainForm";
             this.Text = "Networking";
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.gbxConnection.ResumeLayout(false);
             this.gbxConnection.PerformLayout();
             this.gbxConversation.ResumeLayout(false);
